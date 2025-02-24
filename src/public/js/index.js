@@ -2,7 +2,7 @@
 const socket = io();
 
 // Función para validar el formulario
-function validateForm(formData) {
+const validateForm = (formData) => {
   const errors = [];
 
   if (formData.name.length < 3) {
@@ -22,10 +22,10 @@ function validateForm(formData) {
   }
 
   return errors;
-}
+};
 
 // Función para crear un nuevo producto
-function createProduct(formData) {
+const createProduct = (formData) => {
   // Validar el formulario
   const errors = validateForm(formData);
 
@@ -40,20 +40,23 @@ function createProduct(formData) {
   socket.emit("newProduct", formData);
 
   return true;
-}
+};
 
+//Función para eliminar un producto
 const deleteProduct = (index) => {
   confirmMessage("¿Estás seguro de eliminar el producto?", () =>
     socket.emit("deleteProduct", index)
   );
 };
 
+//Escucha el evento deletedProduct, de confirmación de eliminación de producto
 socket.on("deletedProduct", (data) => {
   const { products, deletedProduct } = data;
   successMessage(`Producto eliminado ${deletedProduct.name}`);
   renderProductList(products);
 });
 
+//Escucha el evento createdProduct, de confirmación de creación de producto
 socket.on("createdProduct", (products) => {
   successMessage("Nuevo producto agregado");
   renderProductList(products);
@@ -78,6 +81,7 @@ document.getElementById("productForm").addEventListener("submit", function (e) {
   }
 });
 
+//Función para renderizar la lista de productos
 const renderProductList = (products) => {
   const productList = document.getElementById("productList");
 
@@ -106,6 +110,7 @@ const renderProductList = (products) => {
   productList.innerHTML = productHTML;
 };
 
+//Función para mostrar el formulario de creación de producto
 const showCreateProduct = () => {
   document.getElementById("createProductView").style.display = "block";
   document.getElementById("productListView").style.display = "none";
@@ -115,6 +120,7 @@ const showCreateProduct = () => {
   document.querySelector(".nav-button:first-child").classList.add("active");
 };
 
+//Función para mostrar la lista de productos
 const showProductList = () => {
   document.getElementById("createProductView").style.display = "none";
   document.getElementById("productListView").style.display = "block";

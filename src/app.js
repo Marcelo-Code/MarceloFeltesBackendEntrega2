@@ -32,19 +32,23 @@ app.use(express.static(__dirname + "/public"));
 app.use("/", viewsRouter);
 
 io.on("connection", (socket) => {
+  //Escucha el evento newProduct, creación de producto
   socket.on("newProduct", (data) => {
     products.push(data);
     console.log(products);
-    socket.broadcast.emit("createdProduct", products);
+    io.emit("createdProduct", products);
   });
 
+  //Escucha el evento deleteProduct, de eliminación de producto
   socket.on("deleteProduct", (index) => {
     let deletedProduct = products.splice(index, 1)[0];
+
+    //Envía el evento deletedProduct de confirmación de eliminación, conjuntamente con el producto eliminado
     io.emit("deletedProduct", { products, deletedProduct });
   });
 
+  //Escucha el evento newUser, para enviar la lista de productos al conectarse un nuevo usuario
   socket.on("newUser", (userId) => {
-    // console.log(userId);
-    io.emit("products", products);
+    socket.emit("products", products);
   });
 });
